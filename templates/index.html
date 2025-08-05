@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Movie Description Rephraser</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 40px;
+      background: #f4f4f4;
+    }
+    h1 {
+      color: #333;
+    }
+    form {
+      background: white;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    input[type="file"] {
+      font-size: 16px;
+    }
+    button {
+      margin-top: 20px;
+      padding: 10px 25px;
+      background: #4285F4;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    #loading {
+      display: none;
+      margin-top: 20px;
+      font-weight: bold;
+      color: #333;
+    }
+    #progress-bar {
+      margin-top: 15px;
+      width: 100%;
+      height: 25px;
+      background: #ddd;
+      border-radius: 5px;
+      overflow: hidden;
+      display: none;
+    }
+    #progress-fill {
+      height: 100%;
+      width: 0%;
+      background: #4285F4;
+      text-align: center;
+      color: white;
+      line-height: 25px;
+      transition: width 0.3s ease;
+    }
+    #download-link {
+      margin-top: 20px;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <h1>🎬 Movie Description Rephraser</h1>
+  <p>Upload an Excel file with <strong>title</strong> and <strong>description</strong> columns. It will return a file with rephrased descriptions.</p>
+  
+  <form id="upload-form" enctype="multipart/form-data">
+    <input type="file" name="excel_file" id="excel-file" accept=".xlsx,.xls" required>
+    <br>
+    <button type="submit">Upload & Rephrase</button>
+    <div id="loading">🔄 Rephrasing in progress... Please wait ⏳</div>
+    <div id="progress-bar">
+      <div id="progress-fill">0%</div>
+    </div>
+    <a id="download-link" href="#" download>⬇️ Download Rephrased File</a>
+  </form>
+
+  <script>
+    const form = document.getElementById("upload-form");
+    const loading = document.getElementById("loading");
+    const progressBar = document.getElementById("progress-bar");
+    const progressFill = document.getElementById("progress-fill");
+    const downloadLink = document.getElementById("download-link");
+
+    form.addEventListener("submit", async function (e) {
+      e.preventDefault();
+
+      loading.style.display = "block";
+      progressBar.style.display = "block";
+      progressFill.style.width = "0%";
+      progressFill.innerText = "0%";
+      downloadLink.style.display = "none";
+
+      const formData = new FormData(form);
+      const response = await fetch("/rephrase", {
+        method: "POST",
+        body: formData,
+      });
+
+      if (response.ok) {
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(blob);
+        downloadLink.href = url;
+        downloadLink.style.display = "block";
+        downloadLink.download = "rephrased_output.xlsx";
+        progressFill.innerText = "100%";
+        progressFill.style.width = "100%";
+        loading.innerText = "✅ Done! Download your file below.";
+      } else {
+        loading.innerText = "❌ Something went wrong.";
+      }
+    });
+
+    // Optional: simulate progress (since no real-time tracking)
+    let interval = null;
+    form.addEventListener("submit", () => {
+      let progress = 0;
+      interval = setInterval(() => {
+        if (progress < 95) {
+          progress += Math.random() * 5;
+          progressFill.style.width = `${progress.toFixed(0)}%`;
+          progressFill.innerText = `${progress.toFixed(0)}%`;
+        } else {
+          clearInterval(interval);
+        }
+      }, 300);
+    });
+  </script>
+</body>
+</html>
