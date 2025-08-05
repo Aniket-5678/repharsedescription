@@ -1,6 +1,13 @@
 Flask==3.1.1
 transformers==4.54.1
-torch==2.7.1
+torch==2.7.1+cpu
+torchaudio==2.7.1+cpu
+torchvision==0.22.1+cpu
+pandas==2.3.1
+openpyxl==3.1.5
+requests==2.32.4
+safetensors==0.5.3
 gunicorn==22.0.0
+flask-cors==4.0.1
 
 
