@@ -93,7 +93,7 @@
       downloadLink.style.display = "none";
 
       const formData = new FormData(form);
-      const response = await fetch("/rephrase", {
+      const response = await fetch("https://repharsedescription.onrender.com/rephrase", {
         method: "POST",
         body: formData,
       });
